@@ -16,7 +16,7 @@ void print_memory_cells(char *p, char *tape, long used_size) {
 	printf("\n");
 }
 
-bool is_valid_character(char c) { return strchr("+-,.[]<>", c) != NULL; }
+bool is_valid_character(char c) { return strchr("+-,.[]<>?;", c) != NULL; }
 
 bool str_ends_with(const char *s, const char *end) {
 	if (!s || !end) {
@@ -88,6 +88,17 @@ int interpret_file(char **ptr, char *tape, char *program, long filesize, bool de
 						depth--;
 					if (depth > 0)
 						i--;
+				}
+			}
+		} else if (c == '?') {
+			if (*p == 0) {
+				int depth = 1;
+				while (depth > 0) {
+					i++;
+					if (program[i] == '?')
+						depth++;
+					if (program[i] == ';')
+						depth--;
 				}
 			}
 		}
