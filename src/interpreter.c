@@ -11,9 +11,6 @@ int interpret_file(uchar **data_pointer, uchar *tape, uchar *program, long files
 
 	for (int i = 0; i < filesize; i++) {
 		char c = program[i];
-		if (!is_valid_character(c)) {
-			continue;
-		}
 
 		if (c == '+') {
 			++(*dp);
@@ -72,6 +69,41 @@ int interpret_file(uchar **data_pointer, uchar *tape, uchar *program, long files
 						depth++;
 					} else if (program[i] == ';') {
 						depth--;
+					}
+				}
+			}
+		} else if (c >= '0' && c <= '9') {
+			int num = 0;
+			int j = i;
+			while (program[j] >= '0' && program[j] <= '9') {
+				num = num * 10 + (program[j] - '0');
+				j++;
+			}
+			i = j;
+
+			char cn = program[i];
+			for (j = 0; j < num; j++) {
+				if (cn == '+') {
+					++(*dp);
+				} else if (cn == '-') {
+					--(*dp);
+				} else if (cn == '>') {
+					if (tape_pos < MAX_TAPE_SIZE - 1) {
+						dp++;
+						tape_pos++;
+						if (tape_pos > max_used) {
+							max_used = tape_pos;
+						}
+					}
+				} else if (cn == '<') {
+					if (tape_pos > 0) {
+						dp--;
+						tape_pos--;
+					}
+				} else if (cn == '.') {
+					putchar(*dp);
+					if (debug_mode) {
+						printf("\n\n");
 					}
 				}
 			}

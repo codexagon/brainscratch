@@ -14,8 +14,6 @@ void print_memory_cells(uchar *dp, uchar *tape, long used_size) {
 	printf("\n");
 }
 
-bool is_valid_character(uchar c) { return strchr("+-,.[]<>?;", c) != NULL; }
-
 bool str_ends_with(const char *s, const char *end) {
 	if (!s || !end) {
 		return false;
