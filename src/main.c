@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "../include/helpers.h"
+#include "../include/interpreter.h"
+
+int main(int argc, char *argv[]) {
+	if (argc < 2) {
+		printf("Usage: %s <file> [options]", argv[0]);
+		return 1;
+	}
+
+	FILE *bsfile = NULL;
+	for (int i = 1; i < argc; i++) {
+		if (str_ends_with(argv[i], ".bs")) {
+			bsfile = fopen(argv[i], "r");
+		}
+	}
+	if (bsfile == NULL) {
+		printf("Could not read file.\n");
+		return 2;
+	}
+
+	bool show_status = false;
+	bool debug_mode = false;
+	for (int i = 1; i < argc; i++) {
+		if (strcmp(argv[i], "--debug") == 0 || strcmp(argv[i], "-d") == 0) {
+			debug_mode = true;
+		}
+		if (strcmp(argv[i], "--show-status") == 0) {
+			show_status = true;
+		}
+	}
+
+	fseek(bsfile, 0, SEEK_END);
+	long filesize = ftell(bsfile);
+	fseek(bsfile, 0, SEEK_SET);
+
+	uchar *program = malloc(filesize + 1);
+
+	fread(program, 1, filesize, bsfile);
+	program[filesize] = '\0';
+
+	uchar *tape = calloc(MAX_TAPE_SIZE, sizeof(char));
+	uchar *dp = tape;
+
+	int used_size = interpret_file(&dp, tape, program, filesize, debug_mode);
+
+	fclose(bsfile);
+
+	if (show_status) {
+		printf("\nMemory cells status:\n");
+		print_memory_cells(dp, tape, used_size);
+	}
+
+	free(tape);
+	free(program);
+	return 0;
+}
