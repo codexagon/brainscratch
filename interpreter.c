@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef unsigned char uchar;
+
 #define MAX_TAPE_SIZE 30000
 
-void print_memory_cells(char *dp, char *tape, long used_size) {
+void print_memory_cells(uchar *dp, uchar *tape, long used_size) {
 	for (int i = 0; i < used_size + 1; i++) {
 		if (dp == &tape[i]) {
 			printf("\033[32m(%i)\033[0m", tape[i]);
@@ -16,7 +18,7 @@ void print_memory_cells(char *dp, char *tape, long used_size) {
 	printf("\n");
 }
 
-bool is_valid_character(char c) { return strchr("+-,.[]<>?;", c) != NULL; }
+bool is_valid_character(uchar c) { return strchr("+-,.[]<>?;", c) != NULL; }
 
 bool str_ends_with(const char *s, const char *end) {
 	if (!s || !end) {
@@ -33,8 +35,8 @@ bool str_ends_with(const char *s, const char *end) {
 	return strncmp(s + l - lend, end, lend) == 0;
 }
 
-int interpret_file(char **data_pointer, char *tape, char *program, long filesize, bool debug_mode) {
-	char *dp = *data_pointer;
+int interpret_file(uchar **data_pointer, uchar *tape, uchar *program, long filesize, bool debug_mode) {
+	uchar *dp = *data_pointer;
 	int tape_pos = 0;
 	int max_used = 0;
 
@@ -148,13 +150,13 @@ int main(int argc, char *argv[]) {
 	long filesize = ftell(bsfile);
 	fseek(bsfile, 0, SEEK_SET);
 
-	char *program = malloc(filesize + 1);
+	uchar *program = malloc(filesize + 1);
 
 	fread(program, 1, filesize, bsfile);
 	program[filesize] = '\0';
 
-	char *tape = calloc(MAX_TAPE_SIZE, sizeof(char));
-	char *dp = tape;
+	uchar *tape = calloc(MAX_TAPE_SIZE, sizeof(char));
+	uchar *dp = tape;
 
 	int used_size = interpret_file(&dp, tape, program, filesize, debug_mode);
 
