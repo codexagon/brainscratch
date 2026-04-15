@@ -2,9 +2,8 @@
 #define INTERPRETER_H
 
 #include "helpers.h"
+#include "tape.h"
 
-#define MAX_TAPE_SIZE 30000
-
-int interpret_file(uchar **data_pointer, uchar *tape, uchar *program, long filesize, bool debug_mode);
+void interpret_file(Tape *t, uchar *program, long filesize, bool debug_mode);
 
 #endif

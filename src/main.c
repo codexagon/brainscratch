@@ -42,19 +42,19 @@ int main(int argc, char *argv[]) {
 	fread(program, 1, filesize, bsfile);
 	program[filesize] = '\0';
 
-	uchar *tape = calloc(MAX_TAPE_SIZE, sizeof(char));
-	uchar *dp = tape;
+	Tape tape;
+	init_tape(&tape);
 
-	int used_size = interpret_file(&dp, tape, program, filesize, debug_mode);
+	interpret_file(&tape, program, filesize, debug_mode);
 
 	fclose(bsfile);
 
 	if (show_status) {
 		printf("\nMemory cells status:\n");
-		print_memory_cells(dp, tape, used_size);
+		print_cells(&tape);
 	}
 
-	free(tape);
+	free(tape.data);
 	free(program);
 	return 0;
 }

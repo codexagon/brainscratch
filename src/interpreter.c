@@ -1,43 +1,41 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "../include/helpers.h"
 #include "../include/interpreter.h"
+#include "../include/tape.h"
 
-int interpret_file(uchar **data_pointer, uchar *tape, uchar *program, long filesize, bool debug_mode) {
-	uchar *dp = *data_pointer;
+void interpret_file(Tape *t, uchar *program, long filesize, bool debug_mode) {
 	int tape_pos = 0;
-	int max_used = 0;
 
 	for (int i = 0; i < filesize; i++) {
 		char c = program[i];
 
 		if (c == '+') {
-			++(*dp);
+			++(*t->dp);
 		} else if (c == '-') {
-			--(*dp);
+			--(*t->dp);
 		} else if (c == '>') {
 			if (tape_pos < MAX_TAPE_SIZE - 1) {
-				dp++;
+				t->dp++;
 				tape_pos++;
-				if (tape_pos > max_used) {
-					max_used = tape_pos;
+				if (tape_pos > t->used_size) {
+					t->used_size = tape_pos;
 				}
 			}
 		} else if (c == '<') {
 			if (tape_pos > 0) {
-				dp--;
+				t->dp--;
 				tape_pos--;
 			}
 		} else if (c == '.') {
-			putchar(*dp);
+			putchar(*t->dp);
 			if (debug_mode) {
 				printf("\n\n");
 			}
 		} else if (c == ',') {
-			*dp = getchar();
+			*t->dp = getchar();
 		} else if (c == '[') {
-			if (*dp == 0) {
+			if (*t->dp == 0) {
 				int depth = 1;
 				while (depth > 0) {
 					i++;
@@ -49,7 +47,7 @@ int interpret_file(uchar **data_pointer, uchar *tape, uchar *program, long files
 				}
 			}
 		} else if (c == ']') {
-			if (*dp != 0) {
+			if (*t->dp != 0) {
 				int depth = 1;
 				while (depth > 0) {
 					i--;
@@ -61,7 +59,7 @@ int interpret_file(uchar **data_pointer, uchar *tape, uchar *program, long files
 				}
 			}
 		} else if (c == '?') {
-			if (*dp == 0) {
+			if (*t->dp == 0) {
 				int depth = 1;
 				while (depth > 0) {
 					i++;
@@ -84,24 +82,24 @@ int interpret_file(uchar **data_pointer, uchar *tape, uchar *program, long files
 			char cn = program[i];
 			for (j = 0; j < num; j++) {
 				if (cn == '+') {
-					++(*dp);
+					++(*t->dp);
 				} else if (cn == '-') {
-					--(*dp);
+					--(*t->dp);
 				} else if (cn == '>') {
 					if (tape_pos < MAX_TAPE_SIZE - 1) {
-						dp++;
+						t->dp++;
 						tape_pos++;
-						if (tape_pos > max_used) {
-							max_used = tape_pos;
+						if (tape_pos > t->used_size) {
+							t->used_size = tape_pos;
 						}
 					}
 				} else if (cn == '<') {
 					if (tape_pos > 0) {
-						dp--;
+						t->dp--;
 						tape_pos--;
 					}
 				} else if (cn == '.') {
-					putchar(*dp);
+					putchar(*t->dp);
 					if (debug_mode) {
 						printf("\n\n");
 					}
@@ -111,10 +109,7 @@ int interpret_file(uchar **data_pointer, uchar *tape, uchar *program, long files
 
 		if (debug_mode) {
 			printf("Step %-5d:   '%c' | ", i + 1, c);
-			print_memory_cells(dp, tape, max_used);
+			print_cells(t);
 		}
 	}
-
-	*data_pointer = dp;
-	return max_used;
 }

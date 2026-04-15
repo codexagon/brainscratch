@@ -3,9 +3,8 @@
 
 #include <stdbool.h>
 
-typedef unsigned char uchar;
+#include "tape.h"
 
-void print_memory_cells(uchar *dp, uchar *tape, long used_size);
 bool str_ends_with(const char *s, const char *end);
 
 #endif

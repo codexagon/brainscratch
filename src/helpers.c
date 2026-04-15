@@ -1,18 +1,6 @@
-#include <stdio.h>
 #include <string.h>
 
 #include "../include/helpers.h"
-
-void print_memory_cells(uchar *dp, uchar *tape, long used_size) {
-	for (int i = 0; i < used_size + 1; i++) {
-		if (dp == &tape[i]) {
-			printf("\033[32m(%i)\033[0m", tape[i]);
-		} else {
-			printf("[%i]", tape[i]);
-		}
-	}
-	printf("\n");
-}
 
 bool str_ends_with(const char *s, const char *end) {
 	if (!s || !end) {
