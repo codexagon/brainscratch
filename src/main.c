@@ -25,11 +25,18 @@ int main(int argc, char *argv[]) {
 	bool show_status = false;
 	bool debug_mode = false;
 	for (int i = 1; i < argc; i++) {
-		if (strcmp(argv[i], "--debug") == 0 || strcmp(argv[i], "-d") == 0) {
+		if (strcmp(argv[i], "--debug") == 0) {
 			debug_mode = true;
-		}
-		if (strcmp(argv[i], "--show-status") == 0) {
+		} else if (strcmp(argv[i], "--show-status") == 0) {
 			show_status = true;
+		} else if (argv[i][0] == '-') {
+			for (int j = 0; argv[i][j] != '\0'; j++) {
+				if (argv[i][j] == 'd') {
+					debug_mode = true;
+				} else if (argv[i][j] == 's') {
+					show_status = true;
+				}
+			}
 		}
 	}
 
