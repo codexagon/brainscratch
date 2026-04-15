@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,14 +46,19 @@ int main(int argc, char *argv[]) {
 	fseek(bsfile, 0, SEEK_SET);
 
 	uchar *program = malloc(filesize + 1);
+	int progsize = 0, c = 0;
+	while ((c = fgetc(bsfile)) != EOF) {
+		if (!isspace(c)) {
+			program[progsize++] = (uchar)c;
+		}
+	}
 
-	fread(program, 1, filesize, bsfile);
-	program[filesize] = '\0';
+	program[progsize] = '\0';
 
 	Tape tape;
 	init_tape(&tape);
 
-	interpret_file(&tape, program, filesize, debug_mode);
+	interpret_file(&tape, program, progsize, debug_mode);
 
 	fclose(bsfile);
 
