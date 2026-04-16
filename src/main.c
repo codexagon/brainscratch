@@ -55,19 +55,22 @@ int main(int argc, char *argv[]) {
 
 	program[progsize] = '\0';
 
-	Tape tape;
-	init_tape(&tape);
+	Tape tape1, tape2;
+	init_tape(&tape1);
+	init_tape(&tape2);
 
-	interpret_file(&tape, program, progsize, debug_mode);
+	interpret_file(&tape1, &tape2, program, progsize, debug_mode);
 
 	fclose(bsfile);
 
 	if (show_status) {
 		printf("\nMemory cells status:\n");
-		print_cells(&tape);
+		print_cells(&tape1);
+		print_cells(&tape2);
 	}
 
-	free(tape.data);
+	free(tape1.data);
+	free(tape2.data);
 	free(program);
 	return 0;
 }

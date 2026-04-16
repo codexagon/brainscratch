@@ -4,28 +4,36 @@
 #include "../include/interpreter.h"
 #include "../include/tape.h"
 
-void interpret_file(Tape *t, uchar *program, long filesize, bool debug_mode) {
-	int tape_pos = 0;
+void interpret_file(Tape *t1, Tape *t2, uchar *program, long filesize, bool debug_mode) {
+	int tape_pos[2] = {0, 0};
+
+	bool second = false;
+	Tape *t;
 
 	for (int i = 0; i < filesize; i++) {
 		char c = program[i];
+		if (second) {
+			t = t2;
+		} else {
+			t = t1;
+		}
 
 		if (c == '+') {
 			++(*t->dp);
 		} else if (c == '-') {
 			--(*t->dp);
 		} else if (c == '>') {
-			if (tape_pos < MAX_TAPE_SIZE - 1) {
+			if (tape_pos[second] < MAX_TAPE_SIZE - 1) {
 				t->dp++;
-				tape_pos++;
-				if (tape_pos > t->used_size) {
-					t->used_size = tape_pos;
+				tape_pos[second]++;
+				if (tape_pos[second] > t->used_size) {
+					t->used_size = tape_pos[second];
 				}
 			}
 		} else if (c == '<') {
-			if (tape_pos > 0) {
+			if (tape_pos[second] > 0) {
 				t->dp--;
-				tape_pos--;
+				tape_pos[second]--;
 			}
 		} else if (c == '.') {
 			putchar(*t->dp);
@@ -70,6 +78,8 @@ void interpret_file(Tape *t, uchar *program, long filesize, bool debug_mode) {
 					}
 				}
 			}
+		} else if (c == '$') {
+			second = !second;
 		} else if (c >= '0' && c <= '9') {
 			int num = 0;
 			int j = i;
@@ -86,17 +96,17 @@ void interpret_file(Tape *t, uchar *program, long filesize, bool debug_mode) {
 				} else if (cn == '-') {
 					--(*t->dp);
 				} else if (cn == '>') {
-					if (tape_pos < MAX_TAPE_SIZE - 1) {
+					if (tape_pos[second] < MAX_TAPE_SIZE - 1) {
 						t->dp++;
-						tape_pos++;
-						if (tape_pos > t->used_size) {
-							t->used_size = tape_pos;
+						tape_pos[second]++;
+						if (tape_pos[second] > t->used_size) {
+							t->used_size = tape_pos[second];
 						}
 					}
 				} else if (cn == '<') {
-					if (tape_pos > 0) {
+					if (tape_pos[second] > 0) {
 						t->dp--;
-						tape_pos--;
+						tape_pos[second]--;
 					}
 				} else if (cn == '.') {
 					putchar(*t->dp);
