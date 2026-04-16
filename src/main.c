@@ -65,7 +65,9 @@ int main(int argc, char *argv[]) {
 
 	if (show_status) {
 		printf("\nMemory cells status:\n");
+		printf("Tape 1: ");
 		print_cells(&tape1);
+		printf("Tape 2: ");
 		print_cells(&tape2);
 	}
 

@@ -118,7 +118,7 @@ void interpret_file(Tape *t1, Tape *t2, uchar *program, long filesize, bool debu
 		}
 
 		if (debug_mode) {
-			printf("Step %-5d:   '%c' | ", i + 1, c);
+			printf("Step %-5d:   '%c' | (tape %i) ", i + 1, c, second + 1);
 			print_cells(t);
 		}
 	}
