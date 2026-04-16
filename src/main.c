@@ -24,18 +24,23 @@ int main(int argc, char *argv[]) {
 	}
 
 	bool show_status = false;
+	bool show_program = false;
 	bool debug_mode = false;
 	for (int i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--debug") == 0) {
 			debug_mode = true;
 		} else if (strcmp(argv[i], "--show-status") == 0) {
 			show_status = true;
+		} else if (strcmp(argv[i], "--show-program") == 0) {
+			show_program = true;
 		} else if (argv[i][0] == '-') {
 			for (int j = 0; argv[i][j] != '\0'; j++) {
 				if (argv[i][j] == 'd') {
 					debug_mode = true;
 				} else if (argv[i][j] == 's') {
 					show_status = true;
+				} else if (argv[i][j] == 'p') {
+					show_program = true;
 				}
 			}
 		}
@@ -59,9 +64,14 @@ int main(int argc, char *argv[]) {
 	init_tape(&tape1);
 	init_tape(&tape2);
 
+	if (show_program) {
+		printf("Program:\n%s\n\n", program);
+	}
+
 	interpret_file(&tape1, &tape2, program, progsize, debug_mode);
 
 	fclose(bsfile);
+	printf("\n");
 
 	if (show_status) {
 		printf("\nMemory cells status:\n");
