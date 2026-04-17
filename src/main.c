@@ -6,6 +6,26 @@
 #include "../include/helpers.h"
 #include "../include/interpreter.h"
 
+void init_program(Program *p, FILE *bsfile) {
+	p->show_status = false;
+	p->show_program = false;
+	p->debug_mode = false;
+
+	p->progsize = 0;
+
+	fseek(bsfile, 0, SEEK_END);
+	p->filesize = ftell(bsfile);
+	fseek(bsfile, 0, SEEK_SET);
+
+	p->program = malloc(p->filesize + 1);
+
+	p->second_tape = false;
+	p->tape_pos[0] = 0;
+	p->tape_pos[1] = 0;
+}
+
+void close_program(Program *p) { free(p->program); }
+
 int main(int argc, char *argv[]) {
 	if (argc < 2) {
 		printf("Usage: %s <file> [options]", argv[0]);
@@ -23,57 +43,52 @@ int main(int argc, char *argv[]) {
 		return 2;
 	}
 
-	bool show_status = false;
-	bool show_program = false;
-	bool debug_mode = false;
+	Program p;
+	init_program(&p, bsfile);
+
 	for (int i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--debug") == 0) {
-			debug_mode = true;
+			p.debug_mode = true;
 		} else if (strcmp(argv[i], "--show-status") == 0) {
-			show_status = true;
+			p.show_status = true;
 		} else if (strcmp(argv[i], "--show-program") == 0) {
-			show_program = true;
+			p.show_program = true;
 		} else if (argv[i][0] == '-') {
 			for (int j = 0; argv[i][j] != '\0'; j++) {
 				if (argv[i][j] == 'd') {
-					debug_mode = true;
+					p.debug_mode = true;
 				} else if (argv[i][j] == 's') {
-					show_status = true;
+					p.show_status = true;
 				} else if (argv[i][j] == 'p') {
-					show_program = true;
+					p.show_program = true;
 				}
 			}
 		}
 	}
 
-	fseek(bsfile, 0, SEEK_END);
-	long filesize = ftell(bsfile);
-	fseek(bsfile, 0, SEEK_SET);
-
-	uchar *program = malloc(filesize + 1);
-	int progsize = 0, c = 0;
+	int c = 0;
 	while ((c = fgetc(bsfile)) != EOF) {
 		if (!isspace(c)) {
-			program[progsize++] = (uchar)c;
+			p.program[p.progsize++] = (uchar)c;
 		}
 	}
 
-	program[progsize] = '\0';
+	p.program[p.progsize] = '\0';
 
 	Tape tape1, tape2;
 	init_tape(&tape1);
 	init_tape(&tape2);
 
-	if (show_program) {
-		printf("Program:\n%s\n\n", program);
+	if (p.show_program) {
+		printf("Program:\n%s\n\n", p.program);
 	}
 
-	interpret_file(&tape1, &tape2, program, progsize, debug_mode);
+	interpret_file(&tape1, &tape2, &p);
 
 	fclose(bsfile);
 	printf("\n");
 
-	if (show_status) {
+	if (p.show_status) {
 		printf("\nMemory cells status:\n");
 		printf("Tape 1: ");
 		print_cells(&tape1);
@@ -83,6 +98,7 @@ int main(int argc, char *argv[]) {
 
 	free(tape1.data);
 	free(tape2.data);
-	free(program);
+
+	close_program(&p);
 	return 0;
 }
