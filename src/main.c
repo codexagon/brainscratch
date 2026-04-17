@@ -68,7 +68,11 @@ int main(int argc, char *argv[]) {
 
 	int c = 0;
 	while ((c = fgetc(bsfile)) != EOF) {
-		if (!isspace(c)) {
+		if (c == '#') {
+			while (strchr("\n\r\t\v\f", fgetc(bsfile)) == NULL) {
+				continue;
+			}
+		} else if (!isspace(c)) {
 			p.program[p.progsize++] = (uchar)c;
 		}
 	}
