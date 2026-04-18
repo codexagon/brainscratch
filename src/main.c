@@ -14,14 +14,12 @@ void init_program(Program *p, FILE *bsfile) {
 	p->progsize = 0;
 
 	fseek(bsfile, 0, SEEK_END);
-	p->filesize = ftell(bsfile);
+	long filesize = ftell(bsfile);
 	fseek(bsfile, 0, SEEK_SET);
 
-	p->program = malloc(p->filesize + 1);
+	p->program = malloc(filesize + 1);
 
 	p->second_tape = false;
-	p->tape_pos[0] = 0;
-	p->tape_pos[1] = 0;
 }
 
 void close_program(Program *p) { free(p->program); }
@@ -69,7 +67,7 @@ int main(int argc, char *argv[]) {
 	int c = 0;
 	while ((c = fgetc(bsfile)) != EOF) {
 		if (c == '#') {
-			while (strchr("\n\r\t\v\f", fgetc(bsfile)) == NULL) {
+			while (strchr("\r\n", fgetc(bsfile)) == NULL) {
 				continue;
 			}
 		} else if (!isspace(c)) {

@@ -8,7 +8,6 @@ void init_tape(Tape *t) {
 	t->data = calloc(MAX_TAPE_SIZE, sizeof(uchar));
 	t->dp = t->data;
 	t->used_size = 0;
-	t->selected = false;
 }
 
 void print_cells(Tape *t) {

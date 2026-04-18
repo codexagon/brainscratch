@@ -9,7 +9,6 @@ typedef struct Tape {
 	uchar *data;
 	uchar *dp;
 	int used_size;
-	bool selected;
 } Tape;
 
 void init_tape(Tape *t);

@@ -14,18 +14,16 @@ void execute_opcode(char opcode, Tape *t1, Tape *t2, Program *pr) {
 		--(*t->dp);
 		break;
 	case '>':
-		if (pr->tape_pos[pr->second_tape] < MAX_TAPE_SIZE - 1) {
+		if (t->dp - t->data < MAX_TAPE_SIZE - 1) {
 			t->dp++;
-			pr->tape_pos[pr->second_tape]++;
-			if (pr->tape_pos[pr->second_tape] > t->used_size) {
-				t->used_size = pr->tape_pos[pr->second_tape];
+			if (t->dp - t->data > t->used_size) {
+				t->used_size = t->dp - t->data;
 			}
 		}
 		break;
 	case '<':
-		if (pr->tape_pos[pr->second_tape] > 0) {
+		if (t->dp - t->data > 0) {
 			t->dp--;
-			pr->tape_pos[pr->second_tape]--;
 		}
 		break;
 	case '.':
